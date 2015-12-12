@@ -20,7 +20,7 @@ def rot13file(fname):
 	for s in fcontent:
 		s = s.strip()
 		rot13line = rot13(s)
-		print rot13line
+		#print rot13line
 		newcontent.append(rot13line)
 
 	with open("output.txt", "w") as f:
@@ -28,7 +28,7 @@ def rot13file(fname):
 			f.write(s + "\n")
 
 def main():
-	parser = argparse.ArgumentParser(description='Encrypt or decrypt a string')
+	parser = argparse.ArgumentParser(description="Encrypt or decrypt a string")
 	parser.add_argument("-s", "--string", type=str, help="encrypt or decrypt an entered string (ROT13 encryption = ROT13 decryption)")
 	parser.add_argument("-f", "--filename", type=str, help="encrypt or decrypt an entered file and write output to output.txt")
 	args = parser.parse_args()

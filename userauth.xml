@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<data>
+	<user>
+		<name>administrator</name>
+		<password>cnffjbeq</password>
+		<permission>3</permission>
+	</user>
+	<user>
+		<name>attacker</name>
+		<password>cnffjbeq</password>
+		<permission>2</permission>
+	</user>
+	<user>
+		<name>user</name>
+		<password>cnffjbeq</password>
+		<permission>1</permission>
+	</user>
+</data>
