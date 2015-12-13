@@ -2,17 +2,17 @@
 <data>
 	<user>
 		<name>administrator</name>
-		<password>cnffjbeq</password>
+		<password>npFVZyJXx9oTMN8TQA==</password>
 		<permission>3</permission>
 	</user>
 	<user>
 		<name>attacker</name>
-		<password>cnffjbeq</password>
+		<password>noFMby9V0dw=</password>
 		<permission>2</permission>
 	</user>
 	<user>
 		<name>user</name>
-		<password>cnffjbeq</password>
+		<password>ioZdfA==</password>
 		<permission>1</permission>
 	</user>
 </data>

@@ -3,6 +3,7 @@
 import argparse
 import subprocess
 import sys
+import os
 
 def parseContent(f):
 	pcontent = []
@@ -27,12 +28,20 @@ def parseContent(f):
 
 	return pdata
 
-def encPass(password):
-	command = "./rot13.py -s " + password
-	process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+def encryptPass(uname,password):
+	with open("temp1.txt", "w") as f:
+		f.write(uname)
 
-	epass = process.stdout.readline()
+	command = "./rc4.py " + password + " -e temp1.txt -o temp2.txt"
+	process = subprocess.Popen(command, shell=True)
+	process.wait()
+
+	with open("temp2.txt", "r+") as f:
+		epass = f.readline()
 	epass = epass.strip()
+
+	os.remove("temp1.txt")
+	os.remove("temp2.txt")
 
 	return epass
 
@@ -61,7 +70,7 @@ def main():
 	key = args.key
 
 	pdata = parseContent(fauth)
-	epass = encPass(password)
+	epass = encryptPass(uname,password)
 	perm = authenticate(pdata,uname,epass)
 
 	if perm > 0:

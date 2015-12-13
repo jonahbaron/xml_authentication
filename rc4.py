@@ -29,7 +29,7 @@ def rc4(string,key):
 
 	return newstring
 
-def encfile(fname,key):
+def encfile(fname,key,outfile):
 	with open(fname) as f:
 		fcontent = f.readlines()
 	#print fcontent
@@ -45,11 +45,11 @@ def encfile(fname,key):
 		output.append(cstring + '\n')
 	#print output
 
-	with open("output.txt", "wb") as f:
+	with open(outfile, "wb") as f:
 		for line in output:
 			f.write(line)
 
-def decfile(fname,key):
+def decfile(fname,key,outfile):
 	with open(fname) as f:
 		fcontent = f.readlines()
 	#print fcontent
@@ -65,7 +65,7 @@ def decfile(fname,key):
 		output.append(pstring + '\n')
 	#print output
 
-	with open("output.txt", "wb") as f:
+	with open(outfile, "wb") as f:
 		for line in output:
 			f.write(line)
 
@@ -75,13 +75,14 @@ def main():
 	parser.add_argument("key", type=str, help="key/password to encrypt or decrypt")
 	parser.add_argument("-e", "--encrypt", type=str, help="file to encrypt")
 	parser.add_argument("-d", "--decrypt", type=str, help="file to decrypt")
+	parser.add_argument("-o", "--output", type=str, help="output file", default="output.txt")
 	args = parser.parse_args()
 
 	if args.encrypt is not None:
-		encfile(args.encrypt,args.key)
+		encfile(args.encrypt,args.key,args.output)
 
 	elif args.decrypt is not None:
-		decfile(args.decrypt,args.key)
+		decfile(args.decrypt,args.key,args.output)
 	else:
 		print "RC4 Encryptor/Decryptor"
 		print "Please rerun script with the -e or -d flag"
