@@ -1,69 +1,90 @@
 #!/usr/bin/env python
 
-import string
+import base64
 import argparse
 
-def ksa(key):
-	klen = len(key)
+def rc4(string,key):
+	string = [ord(char) for char in string]
+	key = [ord(char) for char in key]
 
-	string = range(256)
+	klen = len(key)
+	S = range(256)
 
 	j = 0
 	for i in range(256):
-		j = (j + string[i] + key[i % klen]) % 256
-		temp = string[i]
-		string[i] = string[j]
-		string[j] = temp
-	print string, key
+		j = (j + S[i] + key[i % klen]) % 256
+		S[i], S[j] = S[j], S[i]
 
-	return string
+	i = 0
+	j = 0
+	newchars = []
+	for char in string:
+		i = (i + 1) % 256
+		j = (j + S[i]) % 256
+		S[i], S[j] = S[j], S[i]
+		newchars.append(char ^ S[(S[i] + S[j]) % 256])
 
-def rc4(pstring,key):
-	key = [ord(char) for char in key]
-	string = [ord(char) for char in pstring]
-	tempstring = ksa(key)
+	newchars = [chr(char) for char in newchars]
+	newstring = ''.join(newchars)
 
-	print key
+	return newstring
 
-	cstring = pstring
-
-	return cstring
-
-def rc4file(fname):
+def encfile(fname,key):
 	with open(fname) as f:
 		fcontent = f.readlines()
+	#print fcontent
 
-	newcontent = []
-	for s in fcontent:
-		s = s.strip()
-		rc4line = rc4(s)
-		#print rc4line
-		newcontent.append(rc4line)
+	encoding = base64.b64encode
+	output = []
 
-	with open("output.txt", "w") as f:
-		for s in newcontent:
-			f.write(s + "\n")
+	for pstring in fcontent:
+		pstring = pstring.strip()
+		pstring = rc4(pstring,key)
+		cstring = encoding(pstring)
+		#print cstring
+		output.append(cstring + '\n')
+	#print output
+
+	with open("output.txt", "wb") as f:
+		for line in output:
+			f.write(line)
+
+def decfile(fname,key):
+	with open(fname) as f:
+		fcontent = f.readlines()
+	#print fcontent
+
+	decoding = base64.b64decode
+	output = []
+
+	for cstring in fcontent:
+		cstring = cstring.strip()
+		cstring = decoding(cstring)
+		pstring = rc4(cstring,key)
+		#print pstring
+		output.append(pstring + '\n')
+	#print output
+
+	with open("output.txt", "wb") as f:
+		for line in output:
+			f.write(line)
 
 def main():
-	parser = argparse.ArgumentParser(description="Encrypt or decrypt with RC4")
+	parser = argparse.ArgumentParser(description="Encrypt or decrypt a file with RC4")
+	#parser.add_argument("filename", type=str, help="file to encrypt or decrypt")
 	parser.add_argument("key", type=str, help="key/password to encrypt or decrypt")
-	parser.add_argument("-s", "--string", type=str, help="encrypt or decrypt an entered string")
-	parser.add_argument("-f", "--filename", type=str, help="encrypt or decrypt an entered file and write output to output.txt")
+	parser.add_argument("-e", "--encrypt", type=str, help="file to encrypt")
+	parser.add_argument("-d", "--decrypt", type=str, help="file to decrypt")
 	args = parser.parse_args()
 
-	key = args.key
-	string = args.string
-	fname = args.filename
+	if args.encrypt is not None:
+		encfile(args.encrypt,args.key)
 
-	if args.filename is not None:
-		rc4file(fname)
-
-	elif args.string is not None:
-		output = rc4(string,key)
-		print output
+	elif args.decrypt is not None:
+		decfile(args.decrypt,args.key)
 	else:
 		print "RC4 Encryptor/Decryptor"
-		print "Please run './rc4.py -h'"
+		print "Please rerun script with the -e or -d flag"
 
 if __name__ == "__main__":
 	main()

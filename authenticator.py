@@ -52,11 +52,13 @@ def main():
 	parser.add_argument("-f", "--fileauth", type=str, help="file used to evaluate entered credentials", default="userauth.xml")
 	parser.add_argument("-e", "--encfile", type=str, help="file to encrypt")
 	parser.add_argument("-d", "--decfile", type=str, help="file to decrypt")
+	parser.add_argument("-k", "--key", type=str, help="key/password to encrypt/decrypt specified file")
 	args = parser.parse_args()
 
 	uname = args.username
 	password = args.password
 	fauth = args.fileauth
+	key = args.key
 
 	pdata = parseContent(fauth)
 	epass = encPass(password)
@@ -71,19 +73,23 @@ def main():
 	if args.encfile is not None:
 		encfile = args.encfile
 		if perm == 3 or perm == 2:
-			print "Encrypting", encfile
-			command = "./rot13.py -f " + encfile
+			if args.key is None:
+				key = raw_input("Enter a key: ")
+			print "Encrypting", encfile, "with RC4 (and Base64 encoding)"
+			command = "./rc4.py '" + key + "' -e " + encfile
 			subprocess.Popen(command, shell=True)
-			print "Check output.txt"
+			print "Please check output.txt"
 		else:
 			print uname, "does not have permission to encrypt"
 	elif args.decfile is not None:
 		decfile = args.decfile
 		if perm == 3 or perm == 1:
-			print "Decrypting", decfile
-			command = "./rot13.py -f " + decfile
+			if args.key is None:
+				key = raw_input("Enter a key: ")
+			print "Decrypting", decfile, "with RC4 (and Base64 decoding)"
+			command = "./rc4.py '" + key + "' -d " + decfile
 			subprocess.Popen(command, shell=True)
-			print "Check output.txt"
+			print "Please check output.txt"
 		else:
 			print uname, "does not have permission to decrypt"
 	else:
